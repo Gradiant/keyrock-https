@@ -26,7 +26,7 @@ DNS.1	    = localhost
 EOF
 
 # Generate CSR
-openssl req -config cert.cnf -nodes -new -x509  -keyout server.key -out server.pem
+openssl req -config cert.cnf -nodes -x509 -newkey rsa:4096 -keyout server.key -out server.pem
 
 # Copy certificates
 cp server.key /horizon/certs/horizon.key

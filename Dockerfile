@@ -87,6 +87,10 @@ COPY generate_certificates.sh /root/
 RUN chmod +x generate_certificates.sh
 RUN ./generate_certificates.sh
 
+# Copy apache starter script
+COPY entrypoint.sh /root/
+RUN chmod +x entrypoint.sh
+
 # Mount volumes to grant access from host
 VOLUME /keystone/
 VOLUME /horizon/
@@ -100,7 +104,4 @@ EXPOSE 8000
 # Change workdir
 WORKDIR /keystone
 
-# Enable apache2 mods and sites
-RUN sudo a2enmod ssl proxy proxy_http & sudo a2ensite horizon.conf keystone.conf
-
-CMD sudo service apache2 restart & sudo /keystone/tools/with_venv.sh /keystone/bin/keystone-all -v
+CMD sudo /root/entrypoint.sh
