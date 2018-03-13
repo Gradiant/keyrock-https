@@ -50,6 +50,19 @@ RUN sed -i 's/os.path.join(LOCAL_PATH/#os.path.join(LOCAL_PATH/' /horizon/openst
 # Change keystone endpoint to https
 #RUN sed -i 's#OPENSTACK_KEYSTONE_URL = "http://%s:5000/v3"#OPENSTACK_KEYSTONE_URL = "https://%s:5000/v3"#' /horizon/openstack_dashboard/local/local_settings.py
 
+# Fix no module named six installation bug
+#RUN sudo pip install six==1.9.0
+#RUN cat keystone/tools/install_venv.py
+COPY fix_createVenv_keystone.py /keystone/tools/fix_createVenv.py
+COPY fix_createVenv_horizon.py /horizon/tools/fix_createVenv.py
+RUN sudo chmod a+x /keystone/tools/fix_createVenv.py && \
+    sudo chmod a+x /horizon/tools/fix_createVenv.py
+RUN sudo python /keystone/tools/fix_createVenv.py && \
+    sudo /keystone/tools/with_venv.sh pip install six==1.9.0 && \
+    sudo python /horizon/tools/fix_createVenv.py && \
+    sudo /horizon/tools/with_venv.sh pip install six==1.9.0
+#RUN exit 1
+
 # Install python dependecies
 RUN sudo python keystone/tools/install_venv.py && \
     sudo python horizon/tools/install_venv.py
